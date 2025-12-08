@@ -10,9 +10,10 @@ import { PaymentSuccess } from './components/PaymentSuccess';
 import { PaymentFailed } from './components/PaymentFailed';
 import { addOrder as storageAddOrder, getOrders } from './utils/storage';
 import Profile from './components/Profile';
+import AdminPanel from './components/AdminPanel';
 
 export default function Home() {
-  const [currentView, setCurrentView] = useState<'listing' | 'detail' | 'payment' | 'success' | 'failed' | 'profile'>('listing');
+  const [currentView, setCurrentView] = useState<'listing' | 'detail' | 'payment' | 'success' | 'failed' | 'profile' | 'admin'>('listing');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
@@ -71,6 +72,10 @@ export default function Home() {
     setCurrentView('profile');
   };
 
+  const handleOpenAdmin = () => {
+    setCurrentView('admin');
+  };
+
   const handleBack = () => {
     if (currentView === 'payment') {
       setCurrentView('detail');
@@ -86,7 +91,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 transition-opacity duration-500 opacity-100">
       {currentView === 'listing' && (
-        <ProductListing onProductSelect={handleProductSelect} onOpenProfile={handleOpenProfile} />
+        <ProductListing onProductSelect={handleProductSelect} onOpenProfile={handleOpenProfile} onOpenAdmin={handleOpenAdmin} />
+      )}
+      {currentView === 'admin' && (
+        <AdminPanel onBack={() => setCurrentView('listing')} />
       )}
       {currentView === 'profile' && (
         <Profile user={user} orders={orders} onBack={() => setCurrentView('listing')} />

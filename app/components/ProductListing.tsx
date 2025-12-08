@@ -14,9 +14,10 @@ import { Button } from './ui/Button';
 interface ProductListingProps {
   onProductSelect: (product: Product) => void;
   onOpenProfile?: () => void;
+  onOpenAdmin?: () => void;
 }
 
-export function ProductListing({ onProductSelect, onOpenProfile }: ProductListingProps) {
+export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin }: ProductListingProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { favorites, isLoaded, toggleFavorite } = useFavorites();
@@ -52,6 +53,17 @@ export function ProductListing({ onProductSelect, onOpenProfile }: ProductListin
                 >
                   Profile
                 </Button>
+                {onOpenAdmin && (
+                  <Button
+                    onClick={() => onOpenAdmin && onOpenAdmin()}
+                    variant="outline"
+                    size="md"
+                    className="bg-white/90 text-slate-900"
+                    aria-label="Open admin"
+                  >
+                    Admin
+                  </Button>
+                )}
                 <Button
                   onClick={() => setIsModalOpen(true)}
                   variant="outline"

@@ -2,6 +2,8 @@
 
 import { User, Order } from '../types';
 import { Button } from './ui/Button';
+import { useState } from 'react';
+import { setOrders, clearOrders } from '../utils/storage';
 import { Card } from './ui/Card';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
@@ -12,6 +14,23 @@ interface ProfileProps {
 }
 
 export function Profile({ user, orders, onBack }: ProfileProps) {
+  const [name, setName] = useState(user.name || '');
+  const [email, setEmail] = useState(user.email || '');
+  const [localOrders, setLocalOrders] = useState(orders || []);
+
+  const saveProfile = () => {
+    // currently just update local state; persistent user management not implemented
+    // In a real app we'd POST to an API
+    alert('Profile saved');
+  };
+
+  const handleClearOrders = () => {
+    if (confirm('Clear all order history?')) {
+      clearOrders();
+      setLocalOrders([]);
+    }
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-8 bg-linear-to-br from-slate-50 via-blue-50 to-slate-100">
       <div className="max-w-4xl mx-auto">
@@ -30,13 +49,28 @@ export function Profile({ user, orders, onBack }: ProfileProps) {
           </div>
         </div>
 
+        <Card className="p-4 mb-4">
+          <h3 className="text-lg font-semibold mb-3">Edit Profile</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input value={name} onChange={(e) => setName(e.target.value)} className="p-3 rounded border" placeholder="Full name" />
+            <input value={email} onChange={(e) => setEmail(e.target.value)} className="p-3 rounded border" placeholder="Email" />
+          </div>
+          <div className="mt-3 flex gap-3">
+            <Button onClick={saveProfile} variant="primary">Save</Button>
+            <Button onClick={() => { setName(user.name || ''); setEmail(user.email || ''); }} variant="outline">Reset</Button>
+          </div>
+        </Card>
+
         <Card className="p-4">
-          <h3 className="text-lg font-semibold mb-3">Purchase History</h3>
-          {orders.length === 0 ? (
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold">Purchase History</h3>
+            <Button onClick={handleClearOrders} variant="danger" size="sm">Clear History</Button>
+          </div>
+          {localOrders.length === 0 ? (
             <p className="text-slate-500">You haven't made any purchases yet.</p>
           ) : (
             <div className="divide-y divide-slate-100">
-              {orders.map((o) => (
+              {localOrders.map((o) => (
                 <div key={o.id} className="py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100">
