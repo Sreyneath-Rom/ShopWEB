@@ -6,6 +6,12 @@ export interface Category {
   color: string;
 }
 
+export interface ColorVariant {
+  name: string;
+  value: string;
+  image: string;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -15,6 +21,7 @@ export interface Product {
   description?: string;
   rating?: number;
   inStock?: boolean;
+  colors?: ColorVariant[];
 }
 
 export interface CartItem extends Product {

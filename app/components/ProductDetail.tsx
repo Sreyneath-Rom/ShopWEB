@@ -2,13 +2,13 @@
 "use client";
 
 import { Star } from 'lucide-react';
-import { Product } from '../types';
+import { Product, ColorVariant } from '../types';
 import { useState } from 'react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { Header } from './ui/Header';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
-import { PRODUCT_SIZES, PRODUCT_COLORS } from '../data/products';
+import { PRODUCT_SIZES } from '../data/products';
 
 interface ProductDetailProps {
   product: Product;
@@ -18,7 +18,12 @@ interface ProductDetailProps {
 
 export function ProductDetail({ product, onAddToCart, onBack }: ProductDetailProps) {
   const [selectedSize, setSelectedSize] = useState('M');
-  const [selectedColor, setSelectedColor] = useState(PRODUCT_COLORS[0]);
+  
+  // Use product colors if available, otherwise default to single image
+  const productColors = product.colors || [
+    { name: 'Default', value: '#3B82F6', image: product.image }
+  ];
+  const [selectedColor, setSelectedColor] = useState<ColorVariant>(productColors[0]);
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleAddToCart = () => {
@@ -36,18 +41,9 @@ export function ProductDetail({ product, onAddToCart, onBack }: ProductDetailPro
             <div>
               <div className="aspect-square rounded-3xl bg-linear-to-br from-slate-100 to-slate-50 mb-4 overflow-hidden shadow-xl ring-1 ring-black/5 relative">
                 <ImageWithFallback
-                  src={product.image}
+                  src={selectedColor.image}
                   alt={product.name}
                   className="w-full h-full object-cover"
-                />
-                {/* Color overlay */}
-                <div
-                  className="absolute inset-0 transition-opacity duration-500"
-                  style={{
-                    backgroundColor: selectedColor.value,
-                    opacity: 0.15,
-                    mixBlendMode: 'multiply',
-                  }}
                 />
               </div>
               <div className="grid grid-cols-3 gap-3">
@@ -57,18 +53,9 @@ export function ProductDetail({ product, onAddToCart, onBack }: ProductDetailPro
                     className="aspect-square rounded-xl bg-linear-to-br from-slate-100 to-slate-50 shadow-md ring-1 ring-black/5 overflow-hidden hover:shadow-lg transition-shadow relative"
                   >
                     <ImageWithFallback
-                      src={product.image}
+                      src={selectedColor.image}
                       alt={`${product.name} view ${i + 1}`}
                       className="w-full h-full object-cover"
-                    />
-                    {/* Color overlay on thumbnails */}
-                    <div
-                      className="absolute inset-0 transition-opacity duration-500"
-                      style={{
-                        backgroundColor: selectedColor.value,
-                        opacity: 0.15,
-                        mixBlendMode: 'multiply',
-                      }}
                     />
                   </div>
                 ))}
@@ -124,8 +111,8 @@ export function ProductDetail({ product, onAddToCart, onBack }: ProductDetailPro
                   <p className="text-slate-700 font-medium">Color</p>
                   <span className="text-sm text-slate-500 font-medium">{selectedColor.name}</span>
                 </div>
-                <div className="flex gap-3">
-                  {PRODUCT_COLORS.map((color) => (
+                <div className="flex gap-3 flex-wrap">
+                  {productColors.map((color) => (
                     <button
                       key={color.name}
                       onClick={() => setSelectedColor(color)}
