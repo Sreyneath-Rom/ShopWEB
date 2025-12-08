@@ -14,7 +14,7 @@ interface ProfileProps {
   onLogout?: () => void;
 }
 
-export function Profile({ user, orders, onBack }: ProfileProps) {
+export function Profile({ user, orders, onBack, onLogout }: ProfileProps) {
   const [name, setName] = useState(user.name || '');
   const [email, setEmail] = useState(user.email || '');
   const [localOrders, setLocalOrders] = useState(orders || []);

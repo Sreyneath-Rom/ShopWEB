@@ -1,23 +1,62 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --ios-bg: #f7f7f8;
+  --ios-card: rgba(255,255,255,0.7);
+  --ios-muted: #8e8e93;
+  --ios-accent: #0a84ff;
+  --ios-radius-lg: 18px;
+  --ios-radius-md: 12px;
+  --ios-radius-sm: 10px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --ios-bg: #0b0b0b;
+    --ios-card: rgba(18,18,18,0.6);
+    --ios-muted: #9ca3af;
+    --ios-accent: #0a84ff;
   }
 }
 
+/* Safe area for iOS devices */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ios-bg);
+  color: #111827;
+  font-family: var(--font-sans);
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* iOS style bottom tab bar container */
+.ios-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(12px + env(safe-area-inset-bottom)) 12px 12px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-around;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.08);
+}
+
+/* small utility for frosted buttons */
+.frosted {
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+
+/* iOS-like pill */
+.pill {
+  border-radius: 9999px;
+}
+

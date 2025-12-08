@@ -18,31 +18,25 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variantStyles = {
-    primary: 'bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white shadow-2xl hover:shadow-blue-500/50',
-    secondary: 'bg-linear-to-br from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-white shadow-2xl',
-    danger: 'bg-linear-to-r from-red-500 via-red-600 to-red-700 hover:from-red-600 hover:via-red-700 hover:to-red-800 text-white shadow-2xl hover:shadow-red-500/50',
-    success: 'bg-linear-to-r from-green-500 via-green-600 to-green-700 hover:from-green-600 hover:via-green-700 hover:to-green-800 text-white shadow-2xl hover:shadow-green-500/50',
-    outline: 'bg-white/70 text-slate-600 hover:bg-white/90 border border-slate-200 shadow-lg'
+    primary: 'bg-[linear-gradient(90deg,rgba(10,132,255,0.95),rgba(0,122,255,0.9))] text-white shadow-lg',
+    secondary: 'bg-white/90 text-slate-800 shadow-sm border border-white/60',
+    danger: 'bg-red-500 text-white shadow-sm',
+    success: 'bg-green-500 text-white shadow-sm',
+    outline: 'bg-transparent text-slate-700 border border-slate-200'
   };
 
   const sizeStyles = {
-    sm: 'px-3 py-2 text-sm rounded-xl',
-    md: 'px-4 py-3 text-base rounded-2xl',
-    lg: 'px-6 py-4 text-lg rounded-2xl'
+    sm: 'px-3 py-2 text-sm rounded-full',
+    md: 'px-4 py-3 text-base rounded-full',
+    lg: 'px-6 py-4 text-lg rounded-full'
   };
 
   return (
     <button
       disabled={disabled || isLoading}
-      className={`
-        ${variantStyles[variant]}
-        ${sizeStyles[size]}
-        transition-all duration-300
-        active:scale-[0.98]
-        disabled:opacity-50 disabled:cursor-not-allowed
-        flex items-center justify-center gap-2
-        ${className}
-      `}
+      className={
+        `${variantStyles[variant]} ${sizeStyles[size]} transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`
+      }
       {...props}
     >
       {isLoading && (

@@ -9,9 +9,9 @@ interface CardProps {
 
 export function Card({ children, className = '', variant = 'default' }: CardProps) {
   const variantStyles = {
-    default: 'backdrop-blur-2xl bg-white/80 rounded-4xl shadow-2xl border border-white/60',
-    elevated: 'backdrop-blur-2xl bg-white/90 rounded-4xl shadow-2xl border border-white/60 hover:shadow-2xl transition-shadow',
-    flat: 'backdrop-blur-xl bg-white/70 rounded-3xl shadow-lg border border-white/50'
+    default: 'backdrop-blur-sm bg-[rgba(255,255,255,0.65)] rounded-2xl shadow-md border border-[rgba(255,255,255,0.6)]',
+    elevated: 'backdrop-blur-sm bg-[rgba(255,255,255,0.75)] rounded-2xl shadow-lg border border-[rgba(255,255,255,0.65)] hover:shadow-xl transition-shadow',
+    flat: 'bg-transparent rounded-xl shadow-sm'
   };
 
   return (

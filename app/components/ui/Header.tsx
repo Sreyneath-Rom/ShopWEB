@@ -21,7 +21,7 @@ export function Header({ title, onBack, variant = 'default' }: HeaderProps) {
   };
 
   return (
-    <div className={`${variantStyles[variant]} rounded-3xl shadow-xl border border-white/50 p-4 mb-6 flex items-center`}>
+    <div className={`${variantStyles[variant]} rounded-2xl shadow-md p-4 mb-6 flex items-center`}>
       {onBack && (
         <button
           onClick={onBack}
@@ -35,7 +35,7 @@ export function Header({ title, onBack, variant = 'default' }: HeaderProps) {
           />
         </button>
       )}
-      <h2 className={`text-${titleStyles[variant]} text-xl font-semibold`}>
+      <h2 className={`${titleStyles[variant]} text-2xl font-semibold leading-tight`}>
         {title}
       </h2>
     </div>

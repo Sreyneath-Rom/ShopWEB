@@ -40,13 +40,27 @@ const RegisterModal: React.FC<Props> = ({ open, onClose, onRegister }) => {
     if (password !== confirm) return setError("Passwords don't match.");
 
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-
-    const user = { id: trimmedEmail, name: trimmedName, email: trimmedEmail, isAdmin: false };
-    onRegister(user, remember);
-    setIsLoading(false);
-    onClose();
-    setName(''); setEmail(''); setPassword(''); setConfirm(''); setRemember(false);
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, password, remember }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Registration failed');
+        setIsLoading(false);
+        return;
+      }
+      const user = data.user;
+      onRegister(user, remember);
+      setIsLoading(false);
+      onClose();
+      setName(''); setEmail(''); setPassword(''); setConfirm(''); setRemember(false);
+    } catch (err: any) {
+      setError(err.message || 'Network error');
+      setIsLoading(false);
+    }
   };
 
   const onKeyDown: React.KeyboardEventHandler = (e) => {

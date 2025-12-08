@@ -35,21 +35,30 @@ const LoginModal: React.FC<Props> = ({ open, onClose, onLogin }) => {
     if (!trimmed) return setError('Please enter your email.');
     if (!validateEmail(trimmed)) return setError('Please enter a valid email address.');
     if (!password) return setError('Please enter your password.');
-
     setIsLoading(true);
-    // Simulate network delay for a better UX demo
-    await new Promise((r) => setTimeout(r, 600));
-
-    // Demo auth: password 'admin' grants admin rights
-    const isAdmin = password === 'admin';
-    const name = trimmed.split('@')[0] || trimmed;
-    const user = { id: trimmed, name, email: trimmed, isAdmin };
-    onLogin(user, remember);
-    setIsLoading(false);
-    onClose();
-    setEmail('');
-    setPassword('');
-    setRemember(false);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmed, password, remember }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Login failed');
+        setIsLoading(false);
+        return;
+      }
+      const user = data.user;
+      onLogin(user, remember);
+      setIsLoading(false);
+      onClose();
+      setEmail('');
+      setPassword('');
+      setRemember(false);
+    } catch (err: any) {
+      setError(err.message || 'Network error');
+      setIsLoading(false);
+    }
   };
 
   const handleKeyDown: React.KeyboardEventHandler = (e) => {

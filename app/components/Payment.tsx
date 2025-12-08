@@ -47,6 +47,29 @@ export function Payment({ product, onBack, onPaymentSuccess, onPaymentFailed }: 
     }
   };
 
+  const handleStripe = async () => {
+    if (!agreeToTerms) {
+      alert('Please agree to terms first');
+      return;
+    }
+    const origin = window.location.origin;
+    try {
+      const res = await fetch('/api/stripe/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product: { name: product.name, price: product.price, image: product.image, quantity: 1 } }),
+      });
+      const data = await res.json();
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Stripe session failed: ' + (data.error || 'unknown'));
+      }
+    } catch (err: any) {
+      alert('Network error: ' + err.message);
+    }
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-8 bg-linear-to-br from-slate-50 via-blue-50 to-slate-100">
       <div className="max-w-2xl mx-auto">
@@ -317,6 +340,17 @@ export function Payment({ product, onBack, onPaymentSuccess, onPaymentFailed }: 
             >
               <CheckCircle className="w-5 h-5" />
               {isProcessing ? 'Processing Payment...' : `Pay $${total.toFixed(2)}`}
+            </Button>
+
+            <Button
+              onClick={handleStripe}
+              variant="primary"
+              size="lg"
+              className="w-full"
+              aria-label="Pay with Stripe"
+            >
+              <CreditCard className="w-5 h-5" />
+              Pay with Stripe (Test)
             </Button>
 
             <Button
