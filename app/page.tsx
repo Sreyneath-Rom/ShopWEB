@@ -75,6 +75,7 @@ export default function Home() {
         <PaymentSuccess
           product={selectedProduct}
           onShare={handleShare}
+          onBackToHome={handleBackToHome}
         />
       )}
       {currentView === 'failed' && selectedProduct && (

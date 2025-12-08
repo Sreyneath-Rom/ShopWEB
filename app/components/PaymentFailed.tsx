@@ -1,7 +1,7 @@
 // app/components/PaymentFailed.tsx
 "use client";
 
-import { XCircle, RotateCcw, Home } from 'lucide-react';
+import { XCircle, RotateCcw, Home, CheckCircle } from 'lucide-react';
 import { Product } from '../types';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { Card } from './ui/Card';
@@ -18,12 +18,33 @@ export function PaymentFailed({ product, onRetry, onBackToHome }: PaymentFailedP
   const billId = '#3738173';
   const date = formatDateWithDay();
   const time = formatTime();
+  const tax = (product.price * 0.1);
+  const total = product.price + tax;
   const errorReason = 'Insufficient Balance';
 
   return (
-    <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+    <div className="min-h-screen p-4 md:p-8 bg-linear-to-br from-slate-50 via-red-50 to-slate-100 flex items-center justify-center">
       <div className="w-full max-w-md">
         <Card className="p-8 animate-in fade-in zoom-in duration-500">
+          {/* Progress Indicator */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center gap-2 text-xs">
+              <div className="flex items-center flex-col">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg mb-1"><CheckCircle className="w-5 h-5" /></div>
+                <span className="text-slate-700 font-medium text-xs">Order</span>
+              </div>
+              <div className="h-1 w-8 bg-green-500 rounded-full mx-1 mb-6"></div>
+              <div className="flex items-center flex-col">
+                <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg mb-1"><XCircle className="w-5 h-5" /></div>
+                <span className="text-slate-700 font-medium text-xs">Payment</span>
+              </div>
+              <div className="h-1 w-8 bg-slate-300 rounded-full mx-1 mb-6"></div>
+              <div className="flex items-center flex-col">
+                <div className="w-8 h-8 bg-slate-300 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg mb-1">3</div>
+                <span className="text-slate-500 font-medium text-xs">Confirm</span>
+              </div>
+            </div>
+          </div>
           {/* Error Icon */}
           <div className="text-center mb-8">
             <div className="w-24 h-24 bg-linear-to-br from-red-400 via-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-red-500/50 animate-in zoom-in duration-700 delay-100">
@@ -56,8 +77,12 @@ export function PaymentFailed({ product, onRetry, onBackToHome }: PaymentFailedP
           {/* Error Details */}
           <div className="space-y-3 mb-8 bg-slate-50 rounded-2xl p-4">
             <div className="flex justify-between items-center">
-              <span className="text-slate-500">Amount</span>
+              <span className="text-slate-500">Subtotal</span>
               <span className="text-slate-900 font-semibold">${product.price.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500">Tax (10%)</span>
+              <span className="text-slate-900 font-semibold">${tax.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-500">Status</span>
