@@ -186,23 +186,42 @@ export function Payment({ product, onBack, onPaymentSuccess, onPaymentFailed }: 
           {paymentMethod === 'card' && (
             <div className="space-y-4 mb-8">
               {/* Card Number */}
-              <div className="bg-linear-to-br from-white/70 to-white/50 backdrop-blur-sm rounded-2xl p-4 shadow-lg ring-1 ring-black/5 border border-white/60">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                    <CreditCard className="w-5 h-5 text-slate-600" />
+              <div>
+                <div className={`bg-linear-to-br from-white/70 to-white/50 backdrop-blur-sm rounded-2xl p-4 shadow-lg ring-1 border transition-all ${
+                  form.errors.cardNumber 
+                    ? 'ring-red-300 border-red-200/60 bg-red-50/30' 
+                    : 'ring-black/5 border-white/60'
+                }`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${
+                      form.errors.cardNumber 
+                        ? 'bg-red-100' 
+                        : 'bg-slate-100'
+                    }`}>
+                      <CreditCard className={`w-5 h-5 ${form.errors.cardNumber ? 'text-red-600' : 'text-slate-600'}`} />
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="1234 5678 9012 3456"
+                        value={form.cardNumber}
+                        onChange={(e) => form.handleCardNumberChange(e.target.value)}
+                        maxLength={19}
+                        className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400 font-mono text-lg"
+                        aria-invalid={!!form.errors.cardNumber}
+                        aria-describedby="cardNumberError"
+                      />
+                    </div>
+                    {!form.errors.cardNumber && form.rawCardNumber.length === 16 && (
+                      <div className="text-green-600 text-sm">✓</div>
+                    )}
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Card Number"
-                    value={form.cardNumber}
-                    onChange={(e) => form.handleCardNumberChange(e.target.value)}
-                    maxLength={19}
-                    className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-400 font-mono"
-                    aria-invalid={!!form.errors.cardNumber}
-                    aria-describedby="cardNumberError"
-                  />
                 </div>
-                <ErrorMessage message={form.errors.cardNumber} id="cardNumberError" />
+                {form.errors.cardNumber ? (
+                  <ErrorMessage message={form.errors.cardNumber} id="cardNumberError" />
+                ) : (
+                  <p className="text-xs text-slate-500 mt-2 ml-1">Enter 16-digit card number</p>
+                )}
               </div>
 
               {/* Expiry & CVV */}
