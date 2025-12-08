@@ -3,7 +3,8 @@
 export const STORAGE_KEYS = {
   FAVORITES: 'favorites',
   CART: 'cart',
-  RECENT_PURCHASES: 'recent_purchases'
+  RECENT_PURCHASES: 'recent_purchases',
+  ORDERS: 'orders'
 } as const;
 
 export interface StorageError {
@@ -58,6 +59,47 @@ export const clearFavorites = (): boolean => {
     return true;
   } catch (error) {
     console.error('Failed to clear favorites:', error);
+    return false;
+  }
+};
+
+// Orders
+export const getOrders = (): any[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.ORDERS);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Failed to get orders:', error);
+    return [];
+  }
+};
+
+export const setOrders = (orders: any[]): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    return true;
+  } catch (error) {
+    console.error('Failed to set orders:', error);
+    return false;
+  }
+};
+
+export const addOrder = (order: any): any[] => {
+  const orders = getOrders();
+  const newOrders = [order, ...orders];
+  setOrders(newOrders);
+  return newOrders;
+};
+
+export const clearOrders = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    localStorage.removeItem(STORAGE_KEYS.ORDERS);
+    return true;
+  } catch (error) {
+    console.error('Failed to clear orders:', error);
     return false;
   }
 };

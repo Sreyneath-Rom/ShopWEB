@@ -13,9 +13,10 @@ import { Button } from './ui/Button';
 
 interface ProductListingProps {
   onProductSelect: (product: Product) => void;
+  onOpenProfile?: () => void;
 }
 
-export function ProductListing({ onProductSelect }: ProductListingProps) {
+export function ProductListing({ onProductSelect, onOpenProfile }: ProductListingProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { favorites, isLoaded, toggleFavorite } = useFavorites();
@@ -41,15 +42,26 @@ export function ProductListing({ onProductSelect }: ProductListingProps) {
           <div className="backdrop-blur-xl bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-xl border border-white/50 p-6">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-white text-3xl font-bold">K-Shop</h1>
-              <Button
-                onClick={() => setIsModalOpen(true)}
-                variant="outline"
-                size="md"
-                className="bg-white/90 text-slate-900"
-              >
-                <Plus className="w-5 h-5" />
-                Add Product
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={() => onOpenProfile && onOpenProfile()}
+                  variant="outline"
+                  size="md"
+                  className="bg-white/90 text-slate-900"
+                  aria-label="Open profile"
+                >
+                  Profile
+                </Button>
+                <Button
+                  onClick={() => setIsModalOpen(true)}
+                  variant="outline"
+                  size="md"
+                  className="bg-white/90 text-slate-900"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Product
+                </Button>
+              </div>
             </div>
 
             {/* Search */}

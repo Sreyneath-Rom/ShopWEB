@@ -2,16 +2,26 @@
 "use client";
 
 import { useState } from 'react';
-import { Product } from './types';
+import { Product, Order, User } from './types';
 import { ProductListing } from './components/ProductListing';
 import { ProductDetail } from './components/ProductDetail';
 import { Payment } from './components/Payment';
 import { PaymentSuccess } from './components/PaymentSuccess';
 import { PaymentFailed } from './components/PaymentFailed';
+import { addOrder as storageAddOrder, getOrders } from './utils/storage';
+import Profile from './components/Profile';
 
 export default function Home() {
-  const [currentView, setCurrentView] = useState<'listing' | 'detail' | 'payment' | 'success' | 'failed'>('listing');
+  const [currentView, setCurrentView] = useState<'listing' | 'detail' | 'payment' | 'success' | 'failed' | 'profile'>('listing');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [orders, setOrders] = useState<Order[]>(() => {
+    try {
+      return getOrders() as Order[];
+    } catch {
+      return [];
+    }
+  });
+  const [user] = useState<User>({ id: 'u1', name: 'Guest User' });
 
   const handleProductSelect = (product: Product) => {
     setSelectedProduct(product);
@@ -23,6 +33,24 @@ export default function Home() {
   };
 
   const handlePaymentSuccess = () => {
+    if (selectedProduct) {
+      const subtotal = selectedProduct.price;
+      const tax = +(subtotal * 0.1).toFixed(2);
+      const total = +(subtotal + tax).toFixed(2);
+      const order: Order = {
+        id: `ord_${Date.now()}`,
+        productId: selectedProduct.id,
+        productSnapshot: selectedProduct,
+        quantity: 1,
+        subtotal,
+        tax,
+        total,
+        date: new Date().toISOString(),
+        status: 'paid'
+      };
+      const newOrders = storageAddOrder(order) as Order[];
+      setOrders(newOrders);
+    }
     setCurrentView('success');
   };
 
@@ -37,6 +65,10 @@ export default function Home() {
   const handleBackToHome = () => {
     setCurrentView('listing');
     setSelectedProduct(null); 
+  };
+
+  const handleOpenProfile = () => {
+    setCurrentView('profile');
   };
 
   const handleBack = () => {
@@ -54,7 +86,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 transition-opacity duration-500 opacity-100">
       {currentView === 'listing' && (
-        <ProductListing onProductSelect={handleProductSelect} />
+        <ProductListing onProductSelect={handleProductSelect} onOpenProfile={handleOpenProfile} />
+      )}
+      {currentView === 'profile' && (
+        <Profile user={user} orders={orders} onBack={() => setCurrentView('listing')} />
       )}
       {currentView === 'detail' && selectedProduct && (
         <ProductDetail

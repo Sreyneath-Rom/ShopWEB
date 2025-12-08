@@ -29,3 +29,24 @@ export interface CartItem extends Product {
   selectedSize?: string;
   selectedColor?: string;
 }
+
+export interface Order {
+  id: string;
+  productId: number;
+  productSnapshot: Product;
+  quantity: number;
+  selectedSize?: string;
+  selectedColor?: string;
+  subtotal: number;
+  tax: number;
+  total: number;
+  date: string; // ISO
+  status: 'paid' | 'failed' | 'pending';
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email?: string;
+  avatar?: string;
+}
