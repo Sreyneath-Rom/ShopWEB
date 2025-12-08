@@ -34,23 +34,41 @@ export function ProductDetail({ product, onAddToCart, onBack }: ProductDetailPro
           <div className="grid md:grid-cols-2 gap-8">
             {/* Product Images */}
             <div>
-              <div className="aspect-square rounded-3xl bg-linear-to-br from-slate-100 to-slate-50 mb-4 overflow-hidden shadow-xl ring-1 ring-black/5">
+              <div className="aspect-square rounded-3xl bg-linear-to-br from-slate-100 to-slate-50 mb-4 overflow-hidden shadow-xl ring-1 ring-black/5 relative">
                 <ImageWithFallback
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover"
+                />
+                {/* Color overlay */}
+                <div
+                  className="absolute inset-0 transition-opacity duration-500"
+                  style={{
+                    backgroundColor: selectedColor.value,
+                    opacity: 0.15,
+                    mixBlendMode: 'multiply',
+                  }}
                 />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="aspect-square rounded-xl bg-linear-to-br from-slate-100 to-slate-50 shadow-md ring-1 ring-black/5 overflow-hidden hover:shadow-lg transition-shadow"
+                    className="aspect-square rounded-xl bg-linear-to-br from-slate-100 to-slate-50 shadow-md ring-1 ring-black/5 overflow-hidden hover:shadow-lg transition-shadow relative"
                   >
                     <ImageWithFallback
                       src={product.image}
                       alt={`${product.name} view ${i + 1}`}
                       className="w-full h-full object-cover"
+                    />
+                    {/* Color overlay on thumbnails */}
+                    <div
+                      className="absolute inset-0 transition-opacity duration-500"
+                      style={{
+                        backgroundColor: selectedColor.value,
+                        opacity: 0.15,
+                        mixBlendMode: 'multiply',
+                      }}
                     />
                   </div>
                 ))}
@@ -102,7 +120,10 @@ export function ProductDetail({ product, onAddToCart, onBack }: ProductDetailPro
 
               {/* Color Selection */}
               <div className="mb-8">
-                <p className="text-slate-700 font-medium mb-3">Color</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-slate-700 font-medium">Color</p>
+                  <span className="text-sm text-slate-500 font-medium">{selectedColor.name}</span>
+                </div>
                 <div className="flex gap-3">
                   {PRODUCT_COLORS.map((color) => (
                     <button
@@ -119,6 +140,7 @@ export function ProductDetail({ product, onAddToCart, onBack }: ProductDetailPro
                       }}
                       aria-label={`Select ${color.name} color`}
                       aria-pressed={selectedColor.name === color.name}
+                      title={color.name}
                     />
                   ))}
                 </div>
