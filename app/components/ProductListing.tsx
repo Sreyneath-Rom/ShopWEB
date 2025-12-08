@@ -2,8 +2,8 @@
 "use client";
 
 import { Search, Plus } from 'lucide-react';
-import { Product } from '../types';
-import { useState, useMemo } from 'react';
+import { Product, User } from '../types';
+import { useState, useMemo, useEffect } from 'react';
 import { useFavorites } from '../hooks/useFavorites';
 import { useProducts } from '../hooks/useProducts';
 import { CategoryFilter } from './CategoryFilter';
@@ -15,11 +15,16 @@ interface ProductListingProps {
   onProductSelect: (product: Product) => void;
   onOpenProfile?: () => void;
   onOpenAdmin?: () => void;
+  onOpenLogin?: () => void;
+  user?: User | null;
+  onLogout?: () => void;
+  onOpenRegister?: () => void;
 }
 
-export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin }: ProductListingProps) {
+export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin, onOpenLogin, user, onLogout, onOpenRegister }: ProductListingProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { favorites, isLoaded, toggleFavorite } = useFavorites();
   const {
     filteredProducts,
@@ -35,6 +40,12 @@ export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin }: 
     );
   }, [filteredProducts, searchTerm]);
 
+  // Avoid rendering user-dependent UI on the server to prevent hydration mismatch.
+  // Only show user/admin specific elements after the component has mounted on the client.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="min-h-screen p-4 md:p-6 bg-linear-to-br from-slate-50 via-blue-50 to-slate-100">
       <div className="max-w-7xl mx-auto">
@@ -44,15 +55,30 @@ export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin }: 
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-white text-3xl font-bold">K-Shop</h1>
               <div className="flex items-center gap-3">
-                <Button
-                  onClick={() => onOpenProfile && onOpenProfile()}
-                  variant="outline"
-                  size="md"
-                  className="bg-white/90 text-slate-900"
-                  aria-label="Open profile"
-                >
-                  Profile
-                </Button>
+                {mounted && user && user.id !== 'guest' ? (
+                  <div className="flex items-center gap-2 bg-white/90 rounded-xl px-3 py-1">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 overflow-hidden">
+                      <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=white`} alt={user.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="text-slate-900 text-sm font-medium">{user.name}</div>
+                    {onLogout && (
+                      <Button onClick={onLogout} variant="outline" size="sm">Logout</Button>
+                    )}
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => (onOpenProfile ? onOpenProfile() : onOpenLogin && onOpenLogin())}
+                    variant="outline"
+                    size="md"
+                    className="bg-white/90 text-slate-900"
+                    aria-label="Open profile"
+                  >
+                    Profile
+                  </Button>
+                )}
+                {!mounted && user && user.id === 'guest' && onOpenRegister && (
+                  <Button onClick={() => onOpenRegister && onOpenRegister()} variant="primary" size="md" className="ml-2">Sign up</Button>
+                )}
                 {onOpenAdmin && (
                   <Button
                     onClick={() => onOpenAdmin && onOpenAdmin()}
@@ -64,15 +90,17 @@ export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin }: 
                     Admin
                   </Button>
                 )}
-                <Button
-                  onClick={() => setIsModalOpen(true)}
-                  variant="outline"
-                  size="md"
-                  className="bg-white/90 text-slate-900"
-                >
-                  <Plus className="w-5 h-5" />
-                  Add Product
-                </Button>
+                {mounted && user && user.isAdmin ? (
+                  <Button
+                    onClick={() => setIsModalOpen(true)}
+                    variant="outline"
+                    size="md"
+                    className="bg-white/90 text-slate-900"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Add Product
+                  </Button>
+                ) : null}
               </div>
             </div>
 
@@ -112,8 +140,8 @@ export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin }: 
                 isFavorite={favorites.includes(product.id)}
                 onSelect={onProductSelect}
                 onToggleFavorite={() => toggleFavorite(product.id)}
-                onDelete={() => deleteProduct(product.id)}
-                showDelete={true}
+                onDelete={user && user.isAdmin ? () => deleteProduct(product.id) : undefined}
+                showDelete={!!(user && user.isAdmin)}
               />
             ))
           )}

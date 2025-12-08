@@ -11,6 +11,7 @@ interface ProfileProps {
   user: User;
   orders: Order[];
   onBack: () => void;
+  onLogout?: () => void;
 }
 
 export function Profile({ user, orders, onBack }: ProfileProps) {
@@ -44,8 +45,11 @@ export function Profile({ user, orders, onBack }: ProfileProps) {
               <p className="text-sm text-slate-500">{user.email || 'No email provided'}</p>
             </div>
           </div>
-          <div>
+          <div className="flex items-center gap-2">
             <Button onClick={onBack} variant="outline">Back</Button>
+            {onLogout && (
+              <Button onClick={onLogout} variant="danger">Logout</Button>
+            )}
           </div>
         </div>
 

@@ -103,3 +103,39 @@ export const clearOrders = (): boolean => {
     return false;
   }
 };
+
+// User (simple client-side auth)
+export const USER_KEY = 'current_user';
+
+export const getUser = (): any | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    console.error('Failed to get user:', error);
+    return null;
+  }
+};
+
+export const setUser = (user: any): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    return true;
+  } catch (error) {
+    console.error('Failed to set user:', error);
+    return false;
+  }
+};
+
+export const clearUser = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    localStorage.removeItem(USER_KEY);
+    return true;
+  } catch (error) {
+    console.error('Failed to clear user:', error);
+    return false;
+  }
+};
