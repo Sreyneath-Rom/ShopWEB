@@ -1,0 +1,41 @@
+/* ================================================
+   Components
+================================================ */
+
+/* Body Global Styling */
+body {
+  background: var(--ios-bg);
+  color: #111827;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* iOS Bottom Tab Bar */
+.ios-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: calc(12px + env(safe-area-inset-bottom)) 12px 12px;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 12px;
+
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.5)
+  );
+
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+}
+

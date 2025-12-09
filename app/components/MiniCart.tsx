@@ -1,3 +1,4 @@
+// app/components/MiniCart.tsx
 "use client";
 
 import React, { useState } from 'react';

@@ -1,3 +1,4 @@
+// app/components/AdminPanel.tsx
 "use client";
 
 import { useState } from 'react';

@@ -1,3 +1,4 @@
+// app/components/Profile.tsx
 "use client";
 
 import { User, Order } from '../types';

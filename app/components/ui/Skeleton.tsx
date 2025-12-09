@@ -1,3 +1,4 @@
+// app/components/ui/Skeleton.tsx
 "use client";
 
 import React from 'react';

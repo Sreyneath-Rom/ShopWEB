@@ -1,3 +1,4 @@
+// app/components/FloatingCart.tsx
 "use client";
 
 import React from 'react';

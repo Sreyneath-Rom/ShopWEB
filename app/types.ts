@@ -51,3 +51,13 @@ export interface User {
   avatar?: string;
   isAdmin?: boolean;
 }
+
+export enum Screen {
+  LISTING = "LISTING",
+  DETAIL = "DETAIL",
+  PAYMENT = "PAYMENT",
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+  PROFILE = "PROFILE",
+  ADMIN = "ADMIN"
+}
