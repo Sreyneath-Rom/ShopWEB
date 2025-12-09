@@ -1,11 +1,12 @@
-import { Screen } from "../types";
+// app/pages/ScreenRouter.tsx
+import { Screen } from "../types/types";
 import { ProductDetail } from "./ProductDetail";
 import { ProductListing } from "./ProductListing";
 import { Payment } from "./Payment";
 import { PaymentSuccess } from "./PaymentSuccess";
 import { PaymentFailed } from "./PaymentFailed";
-import { Profile } from "./Profile";
-import { AdminPanel } from "./AdminPanel";
+import { Profile } from "../components/Profile";
+import { AdminPanel } from "../components/AdminPanel";
 
 export default function ScreenRouter({ 
   view, 

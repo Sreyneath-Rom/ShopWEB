@@ -4,7 +4,7 @@ import { auth } from "@/app/lib/auth"; // ← ប្តូរ
 import { addProductToStore } from '@/app/lib/products';
 
 export async function POST(req: Request) {
-  const session = await auth(); // ← ប្រើ auth()
+  const session = await auth(); 
   if (!session?.user || !(session.user as any).isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }

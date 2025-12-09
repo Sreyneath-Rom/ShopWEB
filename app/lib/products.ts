@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Product } from '../types';
+import { Product } from '../types/types';
 
 const FILE = path.join(process.cwd(), 'app', 'data', 'products.json');
 

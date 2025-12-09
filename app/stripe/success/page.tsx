@@ -4,8 +4,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
-import { PaymentSuccess } from '../../components/PaymentSuccess';
-import { Product } from '../../types';
+import { PaymentSuccess } from '../../pages/PaymentSuccess';
+import { Product } from '../../types/types';
 
 export default function StripeSuccessPage() {
   const searchParams = useSearchParams();

@@ -1,7 +1,7 @@
 // app/components/Profile.tsx
 "use client";
 
-import { User, Order } from '../types';
+import { User, Order } from '../types/types';
 import { Button } from './ui/Button';
 import { useState } from 'react';
 import { setOrders, clearOrders } from '../utils/storage';

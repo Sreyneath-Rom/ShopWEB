@@ -1,8 +1,8 @@
-// app/components/ProductCard.tsx
+// app/pages/ProductCard.tsx
 "use client";
 
 import { Heart, ShoppingCart, Star, Trash2 } from 'lucide-react';
-import { Product } from '../types';
+import { Product } from '../types/types';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 interface ProductCardProps {

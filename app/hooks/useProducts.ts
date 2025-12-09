@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from 'react';
-import { Product } from '../types';
+import { Product } from '../types/types';
 import { PRODUCTS } from '../data/products';
 
 export const useProducts = () => {

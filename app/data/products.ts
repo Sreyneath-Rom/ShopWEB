@@ -1,5 +1,5 @@
 // app/data/products.ts
-import { Product, Category } from '../types';
+import { Product, Category } from '../types/types';
 
 export const CATEGORIES: Category[] = [
   { id: 1, name: 'All', icon: '🛍️', color: 'from-blue-500 to-blue-600' },

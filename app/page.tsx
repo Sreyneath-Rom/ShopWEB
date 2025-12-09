@@ -2,12 +2,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Product, Order, User } from "./types";
-import { ProductListing } from "./components/ProductListing";
-import { ProductDetail } from "./components/ProductDetail";
-import { Payment } from "./components/Payment";
-import { PaymentSuccess } from "./components/PaymentSuccess";
-import { PaymentFailed } from "./components/PaymentFailed";
+import { Product, Order, User } from "./types/types";
+import { ProductListing } from "./pages/ProductListing";
+import { ProductDetail } from "./pages/ProductDetail";
+import { Payment } from "./pages/Payment";
+import { PaymentSuccess } from "./pages/PaymentSuccess";
+import { PaymentFailed } from "./pages/PaymentFailed";
 import { addOrder, getOrders } from "./utils/storage";
 
 import LoginModal from "./components/LoginModal";

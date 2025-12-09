@@ -1,13 +1,13 @@
-// app/components/Payment.tsx
+// app/pages/Payment.tsx
 "use client";
 
 import { ChevronLeft, ChevronDown, CreditCard, Wallet, Info, KeyRound, Lock, CheckCircle } from 'lucide-react';
-import { Product } from '../types';
+import { Product } from '../types/types';
 import { useState } from 'react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { Button } from './ui/Button';
-import { Card } from './ui/Card';
-import { ErrorMessage } from './ui/ErrorMessage';
+import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
+import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { usePaymentForm } from '../hooks/usePaymentForm';
 import { formatDate } from '../utils/date';
 

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Order, Product } from '../types';
+import { Order, Product } from '../types/types';
 import { getOrders, setOrders } from '../utils/storage';
 import { useProducts } from '../hooks/useProducts';
 import { Card } from './ui/Card';

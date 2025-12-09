@@ -1,13 +1,13 @@
-// app/components/ProductDetail.tsx
+// app/pages/ProductDetail.tsx
 "use client";
 
 import { Star } from 'lucide-react';
-import { Product, ColorVariant } from '../types';
+import { Product, ColorVariant } from '../types/types';
 import { useState } from 'react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { Header } from './ui/Header';
-import { Card } from './ui/Card';
-import { Button } from './ui/Button';
+import { Header } from '../components/ui/Header';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
 import { PRODUCT_SIZES } from '../data/products';
 
 interface ProductDetailProps {

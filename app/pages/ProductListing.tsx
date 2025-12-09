@@ -1,15 +1,15 @@
-// app/components/ProductListing.tsx
+// app/pages/ProductListing.tsx
 "use client";
 
 import { Search, Plus } from 'lucide-react';
-import { Product, User } from '../types';
+import { Product, User } from '../types/types';
 import { useState, useMemo, useEffect } from 'react';
 import { useFavorites } from '../hooks/useFavorites';
 import { useProducts } from '../hooks/useProducts';
-import { CategoryFilter } from './CategoryFilter';
+import { CategoryFilter } from '../components/CategoryFilter';
 import { ProductCard } from './ProductCard';
-import { AddProductModal } from './AddProductModal';
-import { Button } from './ui/Button';
+import { AddProductModal } from '../components/AddProductModal';
+import { Button } from '../components/ui/Button';
 
 interface ProductListingProps {
   onProductSelect: (product: Product) => void;
