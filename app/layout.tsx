@@ -1,9 +1,11 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { CartProvider } from "./context/CartContext";
 import ClientShell from "./components/ClientShell";
+import { SessionProvider } from "next-auth/react";  // ← Add this import
 
 // Fonts
 const geistSans = Geist({
@@ -16,13 +18,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Metadata
 export const metadata: Metadata = {
   title: "KShop",
   description: "A simple e-commerce platform built with Next.js",
 };
 
-// Layout Component
 export default function RootLayout({
   children,
 }: {
@@ -31,9 +31,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <CartProvider>
-          <ClientShell>{children}</ClientShell>
-        </CartProvider>
+        <SessionProvider>  {/* ← Wrap everything here */}
+          <CartProvider>
+            <ClientShell>{children}</ClientShell>
+          </CartProvider>
+        </SessionProvider>
       </body>
     </html>
   );

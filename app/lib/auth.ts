@@ -1,73 +1,83 @@
-import fs from 'fs';
-import path from 'path';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+// app/lib/auth.ts
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { authenticator } from "otplib";
+import { readUsers, writeUsers } from "./users";
 
-const USERS_FILE = path.join(process.cwd(), 'app', 'data', 'users.json');
-
-export interface StoredUser {
-  id: string;
-  name: string;
-  email: string;
-  passwordHash: string;
-  isAdmin?: boolean;
-}
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
-
-function readUsers(): StoredUser[] {
-  try {
-    if (!fs.existsSync(USERS_FILE)) return [];
-    const raw = fs.readFileSync(USERS_FILE, 'utf8');
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
+// បន្ថែម type នេះនៅលើកំពូល!
+declare module "next-auth" {
+  interface User {
+    isAdmin?: boolean;
+  }
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      isAdmin?: boolean;
+    };
   }
 }
 
-function writeUsers(users: StoredUser[]) {
-  try {
-    fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true });
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-    return true;
-  } catch (e) {
-    console.error('Failed to write users', e);
-    return false;
+declare module "next-auth/jwt" {
+  interface JWT {
+    isAdmin?: boolean;
   }
 }
 
-export async function createUser(name: string, email: string, password: string): Promise<StoredUser> {
-  const users = readUsers();
-  const existing = users.find((u) => u.email === email.toLowerCase());
-  if (existing) throw new Error('User already exists');
-  const hash = await bcrypt.hash(password, 10);
-  const user: StoredUser = { id: email.toLowerCase(), name, email: email.toLowerCase(), passwordHash: hash, isAdmin: email.toLowerCase() === 'admin@luxeshop.com' };
-  users.push(user);
-  writeUsers(users);
-  return user;
-}
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  providers: [
+    Credentials({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+        token: { label: "2FA Token", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
 
-export async function verifyCredentials(email: string, password: string): Promise<StoredUser | null> {
-  const users = readUsers();
-  const user = users.find((u) => u.email === email.toLowerCase());
-  if (!user) return null;
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  return ok ? user : null;
-}
+        const users = readUsers();
+        const user = users.find((u: any) => u.email === credentials.email);
+        if (!user) return null;
 
-export function signToken(payload: object, expiresIn = '1h') {
-  // cast to any to satisfy varying typings across jsonwebtoken versions
-  return jwt.sign(payload as any, JWT_SECRET as any, { expiresIn } as any);
-}
+        const isValid = await bcrypt.compare(credentials.password as string, user.password);
+        if (!isValid) return null;
 
-export function verifyToken(token: string) {
-  try {
-    return jwt.verify(token, JWT_SECRET as any) as any;
-  } catch (e) {
-    return null;
-  }
-}
+        if (user.twoFactorEnabled) {
+          if (!credentials.token) return null;
+          const valid = authenticator.check(credentials.token as string, user.twoFactorSecret);
+          if (!valid) return null;
+        }
 
-export function getPublicUser(u: StoredUser) {
-  return { id: u.id, name: u.name, email: u.email, isAdmin: !!u.isAdmin };
-}
+        return {
+          id: user.id.toString(),
+          email: user.email,
+          name: user.name,
+          isAdmin: !!user.isAdmin, // ← ឥឡូវ TypeScript យល់ហើយ!
+        };
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.isAdmin = user.isAdmin; // ← ឥឡូវដំណើរការ!
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.id) session.user.id = token.id as string;
+      if (token.isAdmin !== undefined) session.user.isAdmin = token.isAdmin; // ← ល្អ!
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+  session: { strategy: "jwt" },
+  secret: process.env.NEXTAUTH_SECRET,
+});

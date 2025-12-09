@@ -50,6 +50,8 @@ export interface User {
   email?: string;
   avatar?: string;
   isAdmin?: boolean;
+  twoFactorEnabled?: boolean;
+  twoFactorSecret?: string;
 }
 
 export enum Screen {
