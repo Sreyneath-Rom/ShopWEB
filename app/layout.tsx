@@ -1,26 +1,15 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import "./style/globals.css";
 
 import { CartProvider } from "./context/CartContext";
-import ClientShell from "./components/ClientShell";
-import { SessionProvider } from "next-auth/react";  // ← Add this import
-
-// Fonts
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  title: "KShop",
-  description: "A simple e-commerce platform built with Next.js",
+  title: "K-Shop",
+  description: "Beautiful iOS-style shopping app",
 };
 
 export default function RootLayout({
@@ -29,11 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SessionProvider>  {/* ← Wrap everything here */}
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className="antialiased bg-slate-50">
+        <SessionProvider>
           <CartProvider>
-            <ClientShell>{children}</ClientShell>
+            {children}
           </CartProvider>
         </SessionProvider>
       </body>

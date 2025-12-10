@@ -8,13 +8,7 @@ import { PaymentFailed } from "./PaymentFailed";
 import { Profile } from "../components/Profile";
 import { AdminPanel } from "../components/AdminPanel";
 
-export default function ScreenRouter({ 
-  view, 
-  product, 
-  orders, 
-  user, 
-  handlers 
-}: any) {
+export default function ScreenRouter({ view, product, orders, user, handlers }: any) {
 
   switch (view) {
     case Screen.LISTING:
