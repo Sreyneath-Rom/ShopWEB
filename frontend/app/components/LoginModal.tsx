@@ -33,34 +33,29 @@ const LoginModal: React.FC<Props> = ({ open, onClose, onLogin }) => {
 
   if (!open) return null;
 
-  const submit = async () => {
-    setIsLoading(true);
-    setError(null);
+  // Inside LoginModal.tsx — replace the submit function
+const submit = async () => {
+  setIsLoading(true);
+  setError('');
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-      callbackUrl: "/",
+  try {
+    const res = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
 
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+
+    localStorage.setItem('token', data.token);
+    onLogin(data.user || { name: email.split('@')[0], email, isAdmin: data.user?.isAdmin });
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
     setIsLoading(false);
-
-    if (res?.error) {
-      setError(res.error);
-      return;
-    }
-
-    if (res?.ok && session) {
-      if ((session as any)?.requiresTwoFactor) {
-        setRequiresMFA(true);
-      } else {
-        toast.success(`Welcome ${session.user?.name ?? ''}!`);
-        onLogin(session.user as any, remember);
-        onClose();
-      }
-    }
-  };
+  }
+};
 
   const verifyMFA = async () => {
     setIsLoading(true);

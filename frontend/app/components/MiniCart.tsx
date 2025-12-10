@@ -69,9 +69,11 @@ export default function MiniCart({ open, onClose }: Props) {
                 }
               }} isLoading={isProcessing}>Checkout</Button>
               <Button variant="outline" onClick={() => clear()}>Clear</Button>
+              
             </div>
           </div>
         )}
+
       </div>
     </div>
   );

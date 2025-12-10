@@ -1,60 +1,38 @@
 // app/hooks/useProducts.ts
-"use client";
+import { useState, useEffect } from 'react';
+import api from '@/app/lib/api';
 
-import { useState, useCallback, useMemo } from 'react';
-import { Product } from '../types/types';
-import { PRODUCTS } from '../data/products';
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image?: string;
+  description?: string;
+  [key: string]: any;
+}
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>(PRODUCTS);
-  const [selectedCategory, setSelectedCategory] = useState<number>(1);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredProducts = useMemo(() => {
-    if (selectedCategory === 1) {
-      return products;
-    }
-    return products.filter(p => p.categoryId === selectedCategory);
-  }, [products, selectedCategory]);
-
-  const addProduct = useCallback((product: Omit<Product, 'id'>) => {
-    const newProduct: Product = {
-      ...product,
-      id: Math.max(...products.map(p => p.id), 0) + 1,
-    };
-    setProducts(prev => [...prev, newProduct]);
-    return newProduct;
-  }, [products]);
-
-  const updateProduct = useCallback((id: number, updates: Partial<Product>) => {
-    setProducts(prev =>
-      prev.map(p => (p.id === id ? { ...p, ...updates } : p))
-    );
+  useEffect(() => {
+    api.get<Product[]>('/products')
+      .then((res) => {
+        setProducts(res.data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
-  const deleteProduct = useCallback((id: number) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
-  }, []);
-
-  const getProductById = useCallback((id: number) => {
-    return products.find(p => p.id === id);
-  }, [products]);
-
-  const searchProducts = useCallback((term: string) => {
-    return products.filter(p =>
-      p.name.toLowerCase().includes(term.toLowerCase()) ||
-      p.description?.toLowerCase().includes(term.toLowerCase())
-    );
-  }, [products]);
-
-  return {
-    products,
-    filteredProducts,
-    selectedCategory,
-    setSelectedCategory,
-    addProduct,
-    updateProduct,
-    deleteProduct,
-    getProductById,
-    searchProducts,
+  const addProduct = async (product: Omit<Product, 'id'>) => {
+    const res = await api.post<Product>('/products', product);
+    setProducts(prev => [...prev, res.data]);
   };
+
+  const deleteProduct = async (id: number) => {
+    await api.delete(`/products/${id}`);
+    setProducts(prev => prev.filter(p => p.id !== id));
+  };
+
+  return { products, loading, addProduct, deleteProduct };
 };

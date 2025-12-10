@@ -9,8 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/axios": "^0.9.36",
     "@types/raf": "^3.4.3",
     "auth": "^1.2.3",
+    "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",
