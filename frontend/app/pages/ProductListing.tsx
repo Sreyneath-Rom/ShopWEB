@@ -2,175 +2,149 @@
 "use client";
 
 import { Search, Plus } from 'lucide-react';
-import { Product, User } from '../types/types';
-import { useState, useMemo, useEffect } from 'react';
-import { useFavorites } from '../hooks/useFavorites';
+import { ProductCard } from '../components/ProductCard';
+import { CategoryFilter } from '../components/CategoryFilter';
+import { AddProductModal } from '../components/AddProductModal';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '@/app/context/CartContext';
-import { CategoryFilter } from '../components/CategoryFilter';
-import { ProductCard } from '../components/ProductCard';
-import { AddProductModal } from '../components/AddProductModal';
-import { Button } from '../components/ui/Button';
+import { useState, useMemo } from 'react';
+import type { User } from '../types/types';
+
+// Extend Product type to accept partial categoryId from backend
+interface ProductFromAPI {
+  id: number;
+  name: string;
+  price: number;
+  image?: string;
+  description?: string;
+  categoryId?: number; // ← Optional from API
+  [key: string]: any;
+}
 
 interface ProductListingProps {
-  onProductSelect: (product: Product) => void;
   user?: User | null;
-  onOpenProfile?: () => void;
-  onOpenAdmin?: () => void;
-  onOpenLogin?: () => void;
-  onLogout?: () => void;
-  onOpenRegister?: () => void;
+  onProductSelect: (product: ProductFromAPI) => void;
+  onAddToCart: (product: ProductFromAPI) => void;
 }
 
 export function ProductListing({
-  onProductSelect,
   user,
-  onOpenProfile,
-  onOpenAdmin,
-  onOpenLogin,
-  onLogout,
-  onOpenRegister
+  onProductSelect,
+  onAddToCart,
 }: ProductListingProps) {
-  const [searchTerm, setSearchTerm] = useState('');
+  const { products = [], loading, addProduct, deleteProduct } = useProducts();
+  const { add: addToCart } = useCart();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
-  const { favorites, toggleFavorite } = useFavorites();
-  const { add } = useCart(); // ← Your CartContext uses `add`
+  // Ensure every product has categoryId (default to 1 = "All")
+  const safeProducts = useMemo(() => {
+    return products.map((p: any) => ({
+      ...p,
+      categoryId: p.categoryId ?? 1,
+    }));
+  }, [products]);
 
-  const {
-    filteredProducts,
-    selectedCategory,
-    setSelectedCategory,
-    addProduct,
-    deleteProduct,
-  } = useProducts();
-
-  // Simulate loading + prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const filteredByCategory = useMemo(() => {
+    if (selectedCategory === 1) return safeProducts;
+    return safeProducts.filter((p: any) => p.categoryId === selectedCategory);
+  }, [safeProducts, selectedCategory]);
 
   const displayedProducts = useMemo(() => {
-    return filteredProducts.filter(p =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    if (!searchTerm.trim()) return filteredByCategory;
+    const term = searchTerm.toLowerCase();
+    return filteredByCategory.filter((p: any) =>
+      p.name?.toLowerCase().includes(term) ||
+      p.description?.toLowerCase().includes(term)
     );
-  }, [filteredProducts, searchTerm]);
+  }, [filteredByCategory, searchTerm]);
 
-  // FIXED: Add quantity: 1 to match CartItem type
-  const handleAddToCart = (product: Product) => {
-    add({ ...product, quantity: 1 });
+  const handleAddToCart = (product: ProductFromAPI) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image,
+    });
+    onAddToCart(product);
   };
 
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+        <p className="mt-4 text-gray-500">Loading products...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen p-4 md:p-6 bg-linear-to-br from-slate-50 via-blue-50 to-slate-100">
-      <div className="max-w-7xl mx-auto">
-
-        {/* Header */}
-        <div className="mb-8">
-          <div className="backdrop-blur-xl bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-xl border border-white/50 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-white text-3xl font-bold">K-Shop</h1>
-              <div className="flex items-center gap-3">
-                {mounted && user && user.id !== 'guest' ? (
-                  <div className="flex items-center gap-2 bg-white/90 rounded-xl px-3 py-1">
-                    <div className="w-8 h-8 rounded-full bg-slate-100 overflow-hidden">
-                      <img
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`}
-                        alt={user.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-slate-900 text-sm font-medium">{user.name}</span>
-                    {onLogout && <Button onClick={onLogout} variant="outline" size="sm">Logout</Button>}
-                  </div>
-                ) : (
-                  <Button
-                    onClick={() => onOpenProfile?.() || onOpenLogin?.()}
-                    variant="outline"
-                    className="bg-white/90 text-slate-900"
-                  >
-                    Profile
-                  </Button>
-                )}
-
-                {mounted && user?.isAdmin && (
-                  <Button
-                    onClick={() => setIsModalOpen(true)}
-                    variant="outline"
-                    className="bg-white/90 text-slate-900"
-                  >
-                    <Plus className="w-5 h-5" /> Add Product
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Search Bar */}
-            <div className="backdrop-blur-xl bg-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg">
-              <Search className="w-5 h-5 text-white/80" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 bg-transparent outline-none text-white placeholder:text-white/60"
-              />
-            </div>
-          </div>
+    <div className="pb-32">
+      {/* Search */}
+      <div className="px-4 mb-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w- w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3.5 bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 focus:outline-none focus:border-blue-500"
+          />
         </div>
+      </div>
 
-        {/* Categories */}
+      {/* Categories */}
+      <div className="px-4 mb-6">
         <CategoryFilter
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
         />
+      </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-24">
-          {isLoading ? (
-            // Skeleton Loaders
-            [...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-md animate-pulse">
-                <div className="aspect-square bg-gray-200" />
-                <div className="p-4 space-y-3">
-                  <div className="h-5 bg-gray-200 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  <div className="h-10 bg-gray-300 rounded-full w-24" />
-                </div>
-              </div>
-            ))
-          ) : displayedProducts.length === 0 ? (
-            <div className="col-span-full text-center py-20">
-              <p className="text-slate-500 text-lg font-medium">
-                {searchTerm ? 'No products found' : 'No products in this category'}
-              </p>
-            </div>
-          ) : (
-            displayedProducts.map(product => (
+      {/* Products Grid */}
+      <div className="px-4">
+        {displayedProducts.length === 0 ? (
+          <p className="text-center py-16 text-gray-500">No products found</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            {displayedProducts.map((product) => (
               <ProductCard
                 key={product.id}
-                product={product}
-                isFavorite={favorites.includes(product.id)}
-                onSelect={onProductSelect}
-                onToggleFavorite={() => toggleFavorite(product.id)}
+                product={product as any} // Safe cast — we fixed categoryId above
+                isFavorite={false}
+                onSelect={() => onProductSelect(product)}
+                onToggleFavorite={() => {}}
                 onAddToCart={() => handleAddToCart(product)}
                 onDelete={user?.isAdmin ? () => deleteProduct(product.id) : undefined}
                 showDelete={!!user?.isAdmin}
               />
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Add Product Modal (Admin only) */}
+      {/* Admin Add Button */}
+      {user?.isAdmin && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="fixed bottom-24 right-6 z-40 w-14 h-14 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition"
+        >
+          <Plus className="w-8 h-8" />
+        </button>
+      )}
+
       <AddProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAdd={addProduct}
+        onAdd={async (newProduct: any) => {
+          // Ensure categoryId is set
+          await addProduct({ ...newProduct, categoryId: newProduct.categoryId || 1 });
+          setIsModalOpen(false);
+        }}
       />
     </div>
   );
