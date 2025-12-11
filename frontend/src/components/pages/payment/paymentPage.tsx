@@ -1,40 +1,36 @@
 'use client';
-
-import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import axios from 'axios';
-import Button from '../../ui/Button';
+import { useState } from 'react';
+import Button from '@/components/ui/Button';
+import api from '@/lib/api';
 
 export default function PaymentPage() {
   const searchParams = useSearchParams();
-  const productId = searchParams.get('productId');
+  const productId = searchParams?.get('productId') ?? null;
   const [loading, setLoading] = useState(false);
 
-  const handleCheckout = async () => {
-    if (!productId) {
-      alert('No product selected');
-      return;
-    }
+  const handlePay = async () => {
+    if (!productId) return alert("No product selected");
+
     setLoading(true);
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/stripe/create-checkout-session`, { productId });
-      window.location.href = res.data.url;  // Redirect directly to session URL
-    } catch (error) {
-      console.error('Error initiating checkout:', error);
-    } finally {
+      const { data } = await api.post('/stripe/create-checkout-session', { productId });
+      window.location.href = data.url;
+    } catch (err) {
+      alert("Payment failed. Try again.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Payment for Product</h1>
+    <div className="container mx-auto px-4 py-20 text-center">
+      <h1 className="text-4xl font-bold mb-8">Checkout</h1>
       <Button
-        onClick={handleCheckout}
+        onClick={handlePay}
         disabled={loading}
-        className="bg-green-500 text-white px-4 py-2 rounded"
+        className="bg-green-600 hover:bg-green-700 text-white text-xl px-12 py-6"
       >
-        {loading ? 'Processing...' : 'Pay with Stripe'}
+        {loading ? "Redirecting..." : "Pay with Stripe"}
       </Button>
     </div>
   );

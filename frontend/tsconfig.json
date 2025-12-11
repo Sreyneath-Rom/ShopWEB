@@ -19,8 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": ["src/*"]                     // ← THIS IS THE ONLY CHANGE
+    },
+    "baseUrl": "."                         // ← Add this line (helps Next.js + VS Code)
   },
   "include": [
     "next-env.d.ts",

@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import Card from '../../ui/Card';
-import { Product } from '../../../types/product';
+import Card from '@/components/ui/Card';
+import { Product } from '@/types/product';
 
 export default function ProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
