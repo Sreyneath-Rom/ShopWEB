@@ -1,31 +1,39 @@
-import { ButtonHTMLAttributes, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+// components/ui/Button.tsx
+"use client";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+import { forwardRef } from "react";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/components/utils/cn";
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
+  fullWidth?: boolean;
 }
 
-export default function Button({ children, className = '', loading, disabled, onClick, ...props }: ButtonProps) {
-  const [isLoading, setIsLoading] = useState(false);
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ children, className, loading, fullWidth, disabled, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        disabled={disabled || loading}
+        className={cn(
+          "px-6 py-3 rounded-xl font-semibold text-white shadow-md",
+          "transform transition-all hover:scale-105 active:scale-95",
+          "disabled:opacity-50 disabled:cursor-not-allowed",
+          fullWidth && "w-full",
+          className
+        )}
+        {...props}
+      >
+        {loading ? (
+          <Loader2 className="animate-spin mx-auto" />
+        ) : (
+          children
+        )}
+      </button>
+    );
+  }
+);
 
-  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (loading || isLoading) return;
-    setIsLoading(true);
-    try {
-      if (onClick) await onClick(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <button
-      className={`px-6 py-3 rounded-xl font-semibold text-white shadow-md transform transition-smooth hover:scale-105 active:scale-95 disabled:opacity-50 ${className}`}
-      disabled={disabled || loading || isLoading}
-      onClick={handleClick}
-      {...props}
-    >
-      {loading || isLoading ? <Loader2 className="animate-spin mx-auto" /> : children}
-    </button>
-  );
-}
+Button.displayName = "Button";
+export default Button;
