@@ -1,34 +1,50 @@
-'use client';
-import Link from 'next/link';
-import { ShoppingCart } from 'lucide-react'; // Icon for cart
-import { useEffect, useState } from 'react';
+// frontend/src/components/ui/Navigation.tsx
+"use client";
+import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Navigation() {
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const updateCart = () => {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
       setCartCount(cart.reduce((sum: number, item: any) => sum + item.quantity, 0));
     };
     updateCart();
-    window.addEventListener('storage', updateCart); // Sync across tabs
-    return () => window.removeEventListener('storage', updateCart);
+    window.addEventListener("storage", updateCart);
+    return () => window.removeEventListener("storage", updateCart);
   }, []);
 
   return (
-    <nav className="bg-neutral sticky top-0 z-50 shadow-md">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-primary">My KShop</Link>
-        <ul className="flex space-x-6 items-center">
-          <li><Link href="/" className="text-foreground hover:text-primary transition-smooth">Home</Link></li>
-          <li><Link href="/products" className="text-foreground hover:text-primary transition-smooth">Products</Link></li>
+    <nav className="backdrop-blur-lg bg-white/70 sticky top-0 z-50 border-b border-gray-200">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <Link href="/" className="text-xl font-semibold text-gray-900 tracking-tight">
+          My KShop
+        </Link>
+
+        <ul className="flex space-x-6 items-center text-gray-700">
+          <li>
+            <Link href="/" className="hover:text-blue-600 transition">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link href="/products" className="hover:text-blue-600 transition">
+              Products
+            </Link>
+          </li>
+
           <li className="relative">
-            <Link href="/cart" className="text-foreground hover:text-primary transition-smooth flex items-center">
+            <Link
+              href="/cart"
+              className="flex items-center hover:text-blue-600 transition"
+            >
               <ShoppingCart className="w-5 h-5 mr-1" />
               Cart
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-accent text-white text-xs rounded-full px-2 py-1">
+                <span className="absolute -top-2 -right-3 bg-blue-600 text-white text-[10px] rounded-full px-1.5 py-0.5 shadow-md">
                   {cartCount}
                 </span>
               )}

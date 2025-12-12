@@ -1,9 +1,8 @@
+// frontend/src/app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import './globals.css';
+import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
-import { Toaster } from 'react-hot-toast';
-const inter = Inter({ subsets: ["latin"] });
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "My KShop",
@@ -13,9 +12,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Navigation />
-        <main>{children}</main>
+        <main className="pt-4 px-4">{children}</main>
         <Toaster position="bottom-center" />
       </body>
     </html>

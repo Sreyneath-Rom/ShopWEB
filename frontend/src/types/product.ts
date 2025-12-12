@@ -4,6 +4,9 @@ export interface Product {
   price: number;
   description: string;
   imageUrl?: string;
-  category?: string;        // ← NEW
+  category?: string; // ← NEW
   categorySlug?: string;
+  rating?: number;
+  inStock?: boolean;
+  colors?: string[];
 }
