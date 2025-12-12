@@ -1,4 +1,4 @@
-// frontend/src/components/pages/product/productPage.tsx
+// frontend/src/components/pages/product/ProductPage.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
