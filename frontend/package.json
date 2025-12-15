@@ -12,13 +12,15 @@
     "@stripe/stripe-js": "^8.5.3",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
+    "jose": "^6.1.3",
     "lucide-react": "^0.560.0",
     "next": "^16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-hot-toast": "^2.6.0",
     "stripe": "^20.0.0",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
+import api from "@/lib/api";
 
 export default function Navigation() {
   const [cartCount, setCartCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const updateCart = () => {
@@ -14,6 +16,12 @@ export default function Navigation() {
     };
     updateCart();
     window.addEventListener("storage", updateCart);
+    
+    // Check if admin
+    api.get('/auth/me')
+      .then((res) => setIsAdmin(res.data.role === 'admin'))
+      .catch(() => setIsAdmin(false));
+
     return () => window.removeEventListener("storage", updateCart);
   }, []);
 
@@ -50,6 +58,13 @@ export default function Navigation() {
               )}
             </Link>
           </li>
+          {isAdmin && (
+            <li>
+              <Link href="/admin/products" className="hover:text-blue-600 transition">
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
