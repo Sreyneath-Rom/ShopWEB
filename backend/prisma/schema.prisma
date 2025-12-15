@@ -18,7 +18,18 @@ model User {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  orders Order[]
+  orders           Order[]
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  products  Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
 }
 
 model Product {
@@ -27,6 +38,7 @@ model Product {
   price       Float
   image       String
   description String?
+  category    Category @relation(fields: [categoryId], references: [id])
   categoryId  Int
   rating      Float?   @default(4.8)
   inStock     Boolean  @default(true)
@@ -35,6 +47,8 @@ model Product {
   orderItems  OrderItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("products")
 }
 
 model Order {
@@ -57,6 +71,7 @@ model OrderItem {
   product       Product @relation(fields: [productId], references: [id])
   quantity      Int
   price         Float
-  selectedSize  String?
   selectedColor String?
+
+  @@unique([orderId, productId])
 }

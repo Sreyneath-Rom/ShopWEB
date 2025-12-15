@@ -17,22 +17,27 @@ export const register = async (req: Request, res: Response) => {
       data: { name, email: email.toLowerCase(), password: hashed },
     });
     res.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
-  } catch (e) {
-    res.status(400).json({ error: 'Email already exists' });
+  } catch (e: any) {
+    if (e.code === 'P2002') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password, token: twoFactorToken } = req.body;
-  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  const { email, password, token } = req.body;
+  if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
-  if (!user || !await bcrypt.compare(password, user.password)) {
+  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
+  // 2FA check
   if (user.twoFactorEnabled) {
-    if (!twoFactorToken || !verifyToken(twoFactorToken, user.twoFactorSecret!)) {
-      return res.status(401).json({ error: '2FA required', requires2FA: true });
+    if (!token || !verifyToken(token, user.twoFactorSecret!)) {
+      return res.status(401).json({ error: '2FA token required', needs2FA: true });
     }
   }
 
@@ -45,7 +50,7 @@ export const login = async (req: Request, res: Response) => {
   res.json({
     success: true,
     token: jwtToken,
-    user: { id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin, twoFactorEnabled: user.twoFactorEnabled }
+    user: { id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin }
   });
 };
 
