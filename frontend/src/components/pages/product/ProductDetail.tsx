@@ -21,27 +21,32 @@ export default function ProductDetail({ id }: ProductDetailProps) {
   const [selectedColor, setSelectedColor] = useState<string>("");
 
   useEffect(() => {
-  if (!id) return;
-  setLoading(true);
-  api
-    .get(`/products/${id}`)
-    .then((res) => {
-      const p = res.data;
-      const normalized = {
-        ...p,
-        category: typeof p.category === 'object' && p.category !== null && 'name' in p.category
-          ? (p.category as { name: string }).name
-          : (typeof p.category === 'string' ? p.category : undefined),
-      };
-      setProduct(normalized);
-      setSelectedColor(normalized.colors?.[0] ?? "");
-    })
-    .catch(() => {
-      toast.error(`Product ${id} not found`);
-      setProduct(null);
-    })
-    .finally(() => setLoading(false));
-}, [id]);
+    if (!id) return;
+    setLoading(true);
+    api
+      .get(`/products/${id}`)
+      .then((res) => {
+        const p = res.data;
+        const normalized = {
+          ...p,
+          category:
+            typeof p.category === "object" &&
+            p.category !== null &&
+            "name" in p.category
+              ? (p.category as { name: string }).name
+              : typeof p.category === "string"
+              ? p.category
+              : undefined,
+        };
+        setProduct(normalized);
+        setSelectedColor(normalized.colors?.[0] ?? "");
+      })
+      .catch(() => {
+        toast.error(`Product ${id} not found`);
+        setProduct(null);
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
 
   const addToCart = () => {
     if (!product) return;
@@ -86,13 +91,17 @@ export default function ProductDetail({ id }: ProductDetailProps) {
         {/* Image */}
         <div className="relative">
           <img
-            src={product.imageUrl ?? "/images/placeholder-800.png"}
+            src={product.imageUrl ?? "https://via.placeholder.com/800x400"}
             alt={product.name}
+            width={800}
+            height={400}
             className="w-full rounded-2xl shadow-md object-contain bg-white"
           />
           {!product.inStock && (
             <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center">
-              <span className="text-white text-2xl font-semibold">Out of stock</span>
+              <span className="text-white text-2xl font-semibold">
+                Out of stock
+              </span>
             </div>
           )}
         </div>
@@ -105,12 +114,23 @@ export default function ProductDetail({ id }: ProductDetailProps) {
           <div className="flex items-center gap-2">
             {[...Array(5)].map((_, i) => {
               const filled = (product.rating ?? 0) >= i + 1;
-              return <Star key={i} className={`w-5 h-5 ${filled ? "text-yellow-400" : "text-gray-300"}`} />;
+              return (
+                <Star
+                  key={i}
+                  className={`w-5 h-5 ${
+                    filled ? "text-yellow-400" : "text-gray-300"
+                  }`}
+                />
+              );
             })}
-            <span className="ml-2 text-sm text-slate-600">{product.rating ?? 0}</span>
+            <span className="ml-2 text-sm text-slate-600">
+              {product.rating ?? 0}
+            </span>
           </div>
 
-          <p className="text-4xl font-extrabold">${(product.price ?? 0).toFixed(2)}</p>
+          <p className="text-4xl font-extrabold">
+            ${(product.price ?? 0).toFixed(2)}
+          </p>
 
           {/* Color selector — iOS segmented-like pills */}
           {product.colors && product.colors.length > 0 && (
@@ -123,7 +143,9 @@ export default function ProductDetail({ id }: ProductDetailProps) {
                     onClick={() => setSelectedColor(c)}
                     aria-pressed={selectedColor === c}
                     className={`px-4 py-2 rounded-full text-sm border ${
-                      selectedColor === c ? "bg-sky-100 border-sky-300 font-semibold" : "bg-white border-gray-200"
+                      selectedColor === c
+                        ? "bg-sky-100 border-sky-300 font-semibold"
+                        : "bg-white border-gray-200"
                     }`}
                   >
                     {c}
@@ -146,17 +168,40 @@ export default function ProductDetail({ id }: ProductDetailProps) {
           <div className="flex items-center gap-4">
             <div className="text-sm text-slate-600">Quantity</div>
             <div className="inline-flex items-center border rounded-full overflow-hidden">
-              <button className="px-4 py-2 text-lg" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">−</button>
+              <button
+                className="px-4 py-2 text-lg"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
               <div className="px-6 py-2 text-sm font-semibold">{quantity}</div>
-              <button className="px-4 py-2 text-lg" onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity">+</button>
+              <button
+                className="px-4 py-2 text-lg"
+                onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
             </div>
           </div>
 
           {/* Actions */}
           <div className="flex gap-3">
-            <Button onClick={addToCart} disabled={!product.inStock} variant="primary" className="flex-1">Add to Cart</Button>
             <Button
-              onClick={() => router.push(`/payment?productId=${product.id}&quantity=${quantity}`)}
+              onClick={addToCart}
+              disabled={!product.inStock}
+              variant="primary"
+              className="flex-1"
+            >
+              Add to Cart
+            </Button>
+            <Button
+              onClick={() =>
+                router.push(
+                  `/payment?productId=${product.id}&quantity=${quantity}`
+                )
+              }
               disabled={!product.inStock}
               variant="outline"
             >
@@ -173,7 +218,9 @@ export default function ProductDetail({ id }: ProductDetailProps) {
       {/* Description */}
       <section className="mt-12 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
         <h2 className="text-lg font-semibold mb-3">Description</h2>
-        <p className="text-sm leading-relaxed text-slate-700">{product.description ?? "No description provided."}</p>
+        <p className="text-sm leading-relaxed text-slate-700">
+          {product.description ?? "No description provided."}
+        </p>
       </section>
     </div>
   );
