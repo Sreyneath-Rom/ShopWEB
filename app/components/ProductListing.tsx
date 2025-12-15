@@ -51,7 +51,7 @@ export function ProductListing({ onProductSelect, onOpenProfile, onOpenAdmin, on
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <div className="backdrop-blur-xl bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-xl border border-white/50 p-6">
+          <div className="backdrop-blur-xl bg-linear-to-r from-sky-400 via-purple-500 to-pink-500 rounded-3xl shadow-xl border border-white/50 p-6">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-white text-3xl font-bold">K-Shop</h1>
               <div className="flex items-center gap-3">
