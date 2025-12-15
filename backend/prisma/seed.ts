@@ -1,7 +1,19 @@
+import 'dotenv/config';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
+const url = new URL(process.env.DATABASE_URL!);
+
+const adapter = new PrismaMariaDb({
+  host: url.hostname,
+  port: Number(url.port) || 3306,
+  user: url.username,
+  password: url.password,
+  database: url.pathname.slice(1),
+});
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   await prisma.user.upsert({
@@ -14,7 +26,10 @@ async function main() {
       isAdmin: true,
     },
   });
+
   console.log('Admin created: admin@kshop.com / admin123');
 }
 
-main().catch(e => console.error(e)).finally(() => prisma.$disconnect());
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

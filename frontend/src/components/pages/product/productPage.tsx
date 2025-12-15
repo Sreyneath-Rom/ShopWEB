@@ -1,13 +1,14 @@
-// frontend/src/components/pages/product/productPage.tsx
+// frontend/src/components/pages/product/ProductPage.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Card from "@/components/ui/Card";
 import { Product } from "@/types/product";
 import api from "@/lib/api";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Search, ChevronDown, Laptop, Shirt, Sparkles, Home, Trophy, Book, ToyBrick, Utensils, Package } from "lucide-react";
+import { Search, Laptop, Shirt, Sparkles, Home, Trophy, Book, ToyBrick, Utensils, Package } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -53,7 +54,11 @@ export default function ProductPage() {
 
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
-      result = result.filter((p) => (p.name || "").toLowerCase().includes(q) || (p.description || "").toLowerCase().includes(q));
+      result = result.filter(
+        (p) =>
+          (p.name || "").toLowerCase().includes(q) ||
+          (p.description || "").toLowerCase().includes(q)
+      );
     }
 
     if (sortBy === "price-asc") result.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
@@ -67,7 +72,9 @@ export default function ProductPage() {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-64 rounded-2xl" />)}
+          {[...Array(8)].map((_, i) => (
+            <Skeleton key={i} className="h-64 rounded-2xl" />
+          ))}
         </div>
       </div>
     );
@@ -99,7 +106,16 @@ export default function ProductPage() {
             <option value="price-desc">Price: High → Low</option>
             <option value="name">Name A → Z</option>
           </select>
-          <Button variant="ghost" onClick={() => { setSearchTerm(""); setSelectedCategory("all"); setSortBy("price-asc"); }}>Reset</Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedCategory("all");
+              setSortBy("price-asc");
+            }}
+          >
+            Reset
+          </Button>
         </div>
       </div>
 
@@ -112,7 +128,9 @@ export default function ProductPage() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${isActive ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-700"}`}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
+                isActive ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-700"
+              }`}
             >
               {icon}
               <span>{cat === "all" ? "All" : cat}</span>
@@ -122,20 +140,32 @@ export default function ProductPage() {
       </div>
 
       {/* Results */}
-      <p className="text-center text-sm text-slate-500 mb-6">{filtered.length} {filtered.length === 1 ? "product" : "products"}</p>
+      <p className="text-center text-sm text-slate-500 mb-6">
+        {filtered.length} {filtered.length === 1 ? "product" : "products"}
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filtered.map((product) => (
           <Card key={product.id} className="hover:scale-105 transition duration-200">
             <div className="relative">
               {product.imageUrl ? (
-                <img src={product.imageUrl} alt={product.name} className="w-full h-40 object-cover rounded-lg" />
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  width={400}
+                  height={160}
+                  className="w-full h-40 object-cover rounded-lg"
+                />
               ) : (
-                <div className="w-full h-40 bg-slate-100 rounded-lg flex items-center justify-center">{defaultIcon}</div>
+                <div className="w-full h-40 bg-slate-100 rounded-lg flex items-center justify-center">
+                  {defaultIcon}
+                </div>
               )}
               {product.category && (
                 <div className="absolute top-3 left-3">
-                  <span className="bg-white/80 px-3 py-1 rounded-full text-xs font-semibold border border-gray-100">{product.category}</span>
+                  <span className="bg-white/80 px-3 py-1 rounded-full text-xs font-semibold border border-gray-100">
+                    {product.category}
+                  </span>
                 </div>
               )}
             </div>
@@ -144,8 +174,11 @@ export default function ProductPage() {
               <h3 className="text-lg font-semibold line-clamp-2">{product.name}</h3>
               <div className="mt-2 flex items-baseline justify-between">
                 <span className="text-lg font-bold">${(product.price ?? 0).toFixed(2)}</span>
-                <Link href={`/products/${product.id}`}>
-                  <a className="text-sky-600 text-sm font-medium">View</a>
+                <Link
+                  href={`/products/${product.id}`}
+                  className="text-sky-600 text-sm font-medium"
+                >
+                  View
                 </Link>
               </div>
             </div>

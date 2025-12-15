@@ -1,3 +1,4 @@
+// src/utils/2fa.ts
 import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
 
