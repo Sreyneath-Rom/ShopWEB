@@ -1,4 +1,4 @@
-// frontend/src/components/pages/product/ProductPage.tsx
+// frontend/src/components/pages/product/productPage.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -35,46 +35,55 @@ export default function ProductPage() {
   useEffect(() => {
     api.get("/products")
       .then((res) => {
-        setProducts(res.data);
-        setFiltered(res.data);
+        const normalized = res.data.map((p: Product) => ({
+          ...p,
+          category: typeof p.category === 'object' && p.category !== null && 'name' in p.category
+            ? (p.category as { name: string }).name
+            : (typeof p.category === 'string' ? p.category : undefined),
+        }));
+        setProducts(normalized);
+        setFiltered(normalized);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
   const categories = useMemo(
-    () => ["all", ...Array.from(new Set(products.map((p) => p.category).filter(Boolean) as string[]))],
+    () => {
+      const stringCats = products
+        .map((p) => p.category)
+        .filter((c): c is string => typeof c === 'string' && c.length > 0);
+      return ['all', ...Array.from(new Set(stringCats))];
+    },
     [products]
   );
 
   useEffect(() => {
-    let result = [...products];
+    let results = products.filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedCategory === "all" || p.category === selectedCategory)
+    );
 
-    if (selectedCategory !== "all") result = result.filter((p) => p.category === selectedCategory);
-
-    if (searchTerm) {
-      const q = searchTerm.toLowerCase();
-      result = result.filter(
-        (p) =>
-          (p.name || "").toLowerCase().includes(q) ||
-          (p.description || "").toLowerCase().includes(q)
-      );
+    switch (sortBy) {
+      case "price-asc":
+        results.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+        break;
+      case "price-desc":
+        results.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+        break;
+      case "name":
+        results.sort((a, b) => a.name.localeCompare(b.name));
+        break;
     }
 
-    if (sortBy === "price-asc") result.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-    else if (sortBy === "price-desc") result.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-    else result.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
-
-    setFiltered(result);
-  }, [products, selectedCategory, searchTerm, sortBy]);
+    setFiltered(results);
+  }, [searchTerm, selectedCategory, sortBy, products]);
 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <Skeleton key={i} className="h-64 rounded-2xl" />
-          ))}
+          {[...Array(12)].map((_, i) => <Skeleton key={i} className="h-64 rounded-2xl" />)}
         </div>
       </div>
     );

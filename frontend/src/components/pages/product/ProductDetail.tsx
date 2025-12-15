@@ -21,21 +21,27 @@ export default function ProductDetail({ id }: ProductDetailProps) {
   const [selectedColor, setSelectedColor] = useState<string>("");
 
   useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    api
-      .get(`/products/${id}`)
-      .then((res) => {
-        const p: Product = res.data;
-        setProduct(p);
-        setSelectedColor(p.colors?.[0] ?? "");
-      })
-      .catch(() => {
-        toast.error(`Product ${id} not found`);
-        setProduct(null);
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+  if (!id) return;
+  setLoading(true);
+  api
+    .get(`/products/${id}`)
+    .then((res) => {
+      const p = res.data;
+      const normalized = {
+        ...p,
+        category: typeof p.category === 'object' && p.category !== null && 'name' in p.category
+          ? (p.category as { name: string }).name
+          : (typeof p.category === 'string' ? p.category : undefined),
+      };
+      setProduct(normalized);
+      setSelectedColor(normalized.colors?.[0] ?? "");
+    })
+    .catch(() => {
+      toast.error(`Product ${id} not found`);
+      setProduct(null);
+    })
+    .finally(() => setLoading(false));
+}, [id]);
 
   const addToCart = () => {
     if (!product) return;
